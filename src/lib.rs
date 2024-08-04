@@ -119,5 +119,5 @@ mod array_iters;
 mod error;
 
 pub use array::Array;
-pub use array_iters::{Iter, IterMut, IntoIter};
+pub use array_iters::{IntoIter, Iter, IterMut};
 pub use error::ArrayError;

@@ -1,14 +1,13 @@
 //! Provides different iterators for [`Array`](crate::Array)
 
+pub use into_iter::IntoIter;
 pub use iter::Iter;
 pub use itermut::IterMut;
-pub use into_iter::IntoIter;
-
 
 mod iter {
 
-    use std::marker::PhantomData;
     use crate::array::Array;
+    use std::marker::PhantomData;
 
     /// Immutable array iterator.
     ///
@@ -37,20 +36,17 @@ mod iter {
         end: *const T,
     }
 
-
     impl<'a, T> Iter<'a, T> {
-
         #[inline]
         pub(crate) fn new(array: &'a Array<T>) -> Self {
             let ptr = array.pointer;
             Self {
                 marker: PhantomData,
                 ptr,
-                end: unsafe { ptr.add(array.size()) }
+                end: unsafe { ptr.add(array.size()) },
             }
         }
     }
-
 
     impl<'a, T> Iterator for Iter<'a, T> {
         type Item = &'a T;
@@ -70,11 +66,10 @@ mod iter {
     }
 }
 
-
 mod itermut {
 
-    use std::marker::PhantomData;
     use crate::array::Array;
+    use std::marker::PhantomData;
 
     /// Mutable array iterator.
     ///
@@ -104,9 +99,7 @@ mod itermut {
         end: *mut T,
     }
 
-
     impl<'a, T> IterMut<'a, T> {
-
         #[inline]
         pub(crate) fn new(array: &'a mut Array<T>) -> Self {
             let ptr = array.pointer;
@@ -114,11 +107,10 @@ mod itermut {
             Self {
                 marker: PhantomData,
                 ptr,
-                end: unsafe { ptr.add(size) }
+                end: unsafe { ptr.add(size) },
             }
         }
     }
-
 
     impl<'a, T> Iterator for IterMut<'a, T> {
         type Item = &'a mut T;
@@ -138,12 +130,10 @@ mod itermut {
     }
 }
 
-
 mod into_iter {
 
-    use std::marker::PhantomData;
     use crate::array::Array;
-
+    use std::marker::PhantomData;
 
     /// An iterator that moves out of an array.
     ///
@@ -165,9 +155,7 @@ mod into_iter {
         end: *const T,
     }
 
-
     impl<T> IntoIter<T> {
-
         #[inline]
         pub(crate) fn new(array: Array<T>) -> Self {
             let end = unsafe { array.pointer.add(array.size()) };
@@ -175,7 +163,6 @@ mod into_iter {
             Self { array, ptr, end }
         }
     }
-
 
     impl<T> Iterator for IntoIter<T> {
         type Item = T;
@@ -194,4 +181,3 @@ mod into_iter {
         }
     }
 }
-

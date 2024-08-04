@@ -1,8 +1,7 @@
 use std::alloc::{Layout, LayoutError};
 
 use super::ArrayError;
-use super::{Iter, IterMut, IntoIter};
-
+use super::{IntoIter, Iter, IterMut};
 
 /// Base `struct` of the crate.
 ///
@@ -20,12 +19,11 @@ use super::{Iter, IterMut, IntoIter};
 /// ```
 ///
 pub struct Array<T> {
-    pub(in super) pointer : *mut T,
-    size : usize
+    pub(super) pointer: *mut T,
+    size: usize,
 }
 
 impl<T> Array<T> {
-
     /// Creates an `Array` with the given size or returns `ArrayError`
     /// if any of the following cases happened:
     /// * failed creating a [`layout`] with the following size,
@@ -45,7 +43,6 @@ impl<T> Array<T> {
             }
         }
     }
-
 
     /// Creates an `Array` from the given raw pointer with the given size
     ///
@@ -72,17 +69,14 @@ impl<T> Array<T> {
     /// ```
     #[inline]
     pub unsafe fn from_pointer(ptr: *mut T, size: usize) -> Self {
-        Self { pointer : ptr, size }
+        Self { pointer: ptr, size }
     }
-
-
 
     /// size of the array
     #[inline]
     pub fn size(&self) -> usize {
         self.size
     }
-
 
     /// Returns an immutable raw pointer at an element by the given index
     ///
@@ -325,9 +319,7 @@ impl<T> Array<T> {
     /// The array cannot be used after calling this.
     #[inline]
     pub fn into_vec(self) -> Vec<T> {
-        unsafe{
-            Vec::from_raw_parts(self.pointer, self.size, self.size)
-        }
+        unsafe { Vec::from_raw_parts(self.pointer, self.size, self.size) }
     }
 
     /// Returns immutable raw pointer to the memory, allocated by the array.
@@ -382,9 +374,7 @@ impl<T> Array<T> {
     pub fn as_mut_ptr(&self) -> *mut T {
         self.pointer
     }
-
 }
-
 
 impl<'a, T> IntoIterator for &'a Array<T> {
     type Item = &'a T;
@@ -409,7 +399,6 @@ impl<'a, T> IntoIterator for &'a Array<T> {
         self.iter()
     }
 }
-
 
 impl<'a, T> IntoIterator for &'a mut Array<T> {
     type Item = &'a mut T;
@@ -436,7 +425,6 @@ impl<'a, T> IntoIterator for &'a mut Array<T> {
     }
 }
 
-
 impl<T> IntoIterator for Array<T> {
     type Item = T;
     type IntoIter = IntoIter<T>;
@@ -451,7 +439,6 @@ impl<T> IntoIterator for Array<T> {
     }
 }
 
-
 impl<T> std::ops::Index<usize> for Array<T> {
     type Output = T;
 
@@ -461,26 +448,20 @@ impl<T> std::ops::Index<usize> for Array<T> {
     }
 }
 
-
 impl<T> std::ops::IndexMut<usize> for Array<T> {
-
     #[inline]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.try_get_mut(index).expect("index out of bounds")
     }
 }
 
-
 impl<T> Drop for Array<T> {
-
     fn drop(&mut self) {
         unsafe { self.pointer.drop_in_place() };
     }
 }
 
-
 impl<T> From<Vec<T>> for Array<T> {
-
     /// Converts a `Vec<T>` to `Array<T>`.
     ///
     /// # Panics
@@ -505,8 +486,7 @@ impl<T> From<Vec<T>> for Array<T> {
     /// [`layout`]: std::alloc::Layout
     fn from(vec: Vec<T>) -> Self {
         let size = vec.len();
-        let mut array = Array::new(size)
-            .expect("failed to create new Array");
+        let mut array = Array::new(size).expect("failed to create new Array");
         let mut i = 0_usize;
         unsafe {
             for item in vec {
@@ -518,9 +498,7 @@ impl<T> From<Vec<T>> for Array<T> {
     }
 }
 
-
 impl<T: Clone> Clone for Array<T> {
-
     /// Copies all elements of one array to another.
     ///
     /// # Note
@@ -557,8 +535,7 @@ impl<T: Clone> Clone for Array<T> {
     /// [allocating]: std::alloc
     /// [`layout`]: std::alloc::Layout
     fn clone(&self) -> Self {
-        let arr = Array::new(self.size)
-            .expect("failed to crate new Array");
+        let arr = Array::new(self.size).expect("failed to crate new Array");
         unsafe {
             for i in 0..self.size {
                 *arr.get_mut_ptr(i) = std::ptr::read(self.get_ptr(i));
@@ -567,7 +544,6 @@ impl<T: Clone> Clone for Array<T> {
         arr
     }
 }
-
 
 impl<T> std::ops::Deref for Array<T> {
     type Target = [T];
@@ -578,19 +554,15 @@ impl<T> std::ops::Deref for Array<T> {
     }
 }
 
-
 impl<T> std::ops::DerefMut for Array<T> {
-
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         unsafe { std::slice::from_raw_parts_mut(self.pointer, self.size) }
     }
 }
 
-
 // additional functionality
 impl<T> Array<T> {
-
     /// Tries to take `n` items from the given `iterator` and
     /// to put them into array of size `n`
     ///
@@ -619,17 +591,16 @@ impl<T> Array<T> {
     /// [allocating]: std::alloc
     /// [`layout`]: std::alloc::Layout
     pub fn take_from_iter<I: Iterator>(iterator: &mut I, n: usize) -> Self
-        where
-            I : Iterator,
-            T : From<I::Item>
+    where
+        I: Iterator,
+        T: From<I::Item>,
     {
-        let mut arr = Array::new(n)
-            .expect("failed to create new Array");
+        let mut arr = Array::new(n).expect("failed to create new Array");
         unsafe {
             for i in 0..n {
                 match iterator.next() {
                     None => break,
-                    Some(val) => *arr.get_mut_ptr(i) = val.into()
+                    Some(val) => *arr.get_mut_ptr(i) = val.into(),
                 }
             }
         }

@@ -171,7 +171,7 @@ mod into_iter {
         #[inline]
         pub(crate) fn new(array: Array<T>) -> Self {
             let end = unsafe { array.pointer.add(array.size()) };
-            let ptr = array.pointer.as_const();
+            let ptr = array.pointer.cast_const();
             Self { array, ptr, end }
         }
     }

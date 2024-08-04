@@ -117,7 +117,6 @@
 
 
 
-#![feature(ptr_const_cast)]
 #![feature(rustc_attrs)]
 
 mod array;

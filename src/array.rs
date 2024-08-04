@@ -356,7 +356,7 @@ impl<T> Array<T> {
     /// [`as_mut_ptr`]: Array::as_mut_ptr
     #[inline]
     pub fn as_ptr(&self) -> *const T {
-        self.pointer.as_const()
+        self.pointer.cast_const()
     }
 
     /// Returns mutable raw pointer to the memory, allocated by the array.

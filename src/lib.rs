@@ -114,11 +114,6 @@
 //!
 //!
 
-
-
-
-#![feature(rustc_attrs)]
-
 mod array;
 mod array_iters;
 mod error;

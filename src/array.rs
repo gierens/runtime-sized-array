@@ -456,10 +456,6 @@ impl<T> std::ops::Index<usize> for Array<T> {
     type Output = T;
 
     #[inline]
-    #[rustc_on_unimplemented(
-        message = "array indices are of type `usize` or `Index`",
-        label = "array indices are of type `usize` or `Index`"
-    )]
     fn index(&self, index: usize) -> &Self::Output {
         self.try_get(index).expect("index out of bounds")
     }
@@ -469,10 +465,6 @@ impl<T> std::ops::Index<usize> for Array<T> {
 impl<T> std::ops::IndexMut<usize> for Array<T> {
 
     #[inline]
-    #[rustc_on_unimplemented(
-        message = "array indices are of type `usize` or `Index`",
-        label = "array indices are of type `usize` or `Index`"
-    )]
     fn index_mut(&mut self, index: usize) -> &mut Self::Output {
         self.try_get_mut(index).expect("index out of bounds")
     }
